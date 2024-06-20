@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Poker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game">
+        <h1>Jeu de Poker</h1>
+        <div id="player-hand" class="hand"></div>
+        <div id="community-cards" class="hand"></div>
+        <div>
+            <p>Somme de départ : <span id="player-money">1000</span> €</p>
+            <button id="deal-button">Distribuer les cartes</button>
+            <button id="bet-button">Parier 100 €</button>
+            <button id="fold-button">Se coucher</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: green;
+    color: white;
+    margin: 0;
+}
+
+#game {
+    text-align: center;
+}
+
+.hand {
+    margin: 10px 0;
+}
+
+.card {
+    display: inline-block;
+    width: 50px;
+    height: 75px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    line-height: 75px;
+    text-align: center;
+    font-size: 20px;
+    margin: 0 5px;
+}
+
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+// script.js
+const suits = ['♥', '♦', '♣', '♠'];
+const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+let deck = [];
+let playerMoney = 1000;
+
+function createDeck() {
+    deck = [];
+    for (let suit of suits) {
+        for (let value of values) {
+            deck.push(`${value}${suit}`);
+        }
+    }
+}
+
+function shuffleDeck() {
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
+
+function dealCards() {
+    const playerHand = document.getElementById('player-hand');
+    const communityCards = document.getElementById('community-cards');
+    
+    playerHand.innerHTML = '';
+    communityCards.innerHTML = '';
+
+    const playerCards = [deck.pop(), deck.pop()];
+    const community = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+
+    playerCards.forEach(card => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        cardDiv.innerText = card;
+        playerHand.appendChild(cardDiv);
+    });
+
+    community.forEach(card => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        cardDiv.innerText = card;
+        communityCards.appendChild(cardDiv);
+    });
+}
+
+function updatePlayerMoney() {
+    document.getElementById('player-money').innerText = playerMoney;
+}
+
+document.getElementById('deal-button').addEventListener('click', () => {
+    createDeck();
+    shuffleDeck();
+    dealCards();
+});
+
+document.getElementById('bet-button').addEventListener('click', () => {
+    if (playerMoney >= 100) {
+        playerMoney -= 100;
+        updatePlayerMoney();
+    } else {
+        alert('Vous n\'avez pas assez d\'argent pour parier.');
+    }
+});
+
+document.getElementById('fold-button').addEventListener('click', () => {
+    alert('Vous vous êtes couché.');
+    createDeck();
+    shuffleDeck();
+    dealCards();
+});
+
+createDeck();
+shuffleDeck();
+updatePlayerMoney();
